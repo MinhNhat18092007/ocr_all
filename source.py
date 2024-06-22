@@ -1,7 +1,9 @@
-import re
 import streamlit as st
 from PIL import Image
-from PIL import Image
+from tkinter import ttk
+import tkinter as tk
+from tkinter import filedialog
+from PIL import Image, ImageTk
 import os
 import argparse
 import torch
@@ -22,15 +24,20 @@ from PIL import Image
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 import os
+import tkinter as tk
+from tkinter import filedialog
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 import cv2
 import glob
 import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import filedialog
 from PIL import Image, ImageTk
 import file_utils
 import os
+import tkinter.messagebox as messagebox
 import imgproc
 
 
@@ -69,6 +76,9 @@ csv_columns = ['x_top_left', 'y_top_left', 'x_top_right', 'y_top_right', 'x_bot_
 # load net
 net = CRAFT()  # initialize
 print('Đang thực hiện load weight (' + args.trained_model + ')')
+'''
+nhảy sang file test, đưa vào train model
+'''
 if args.cpu:
     net.load_state_dict(copyStateDict(torch.load(args.trained_model, map_location='cpu')))
 else:
@@ -103,7 +113,7 @@ if args.refine:
 
 config = Cfg.load_config_from_name('vgg_transformer')
 config['export'] = 'transformerocr_checkpoint.pth'
-config['device'] = 'cuda'
+config['device'] = 'cpu'
 config['predictor']['beamsearch'] = False
 
 detector = Predictor(config)
@@ -167,6 +177,14 @@ if uploaded_file is not None:
                 f.write(" ")
 
         else:
+            # for box_num, item in enumerate(bboxes):
+            #     # Crop the bbox from the image
+            #     pts = np.array(item, np.int32).reshape((-1, 1, 2))
+            #     rect = cv2.boundingRect(pts)
+            #     x, y, w, h = rect
+            #     cropped_img = image[y:y+h, x:x+w].copy()
+            #     crop_path = os.path.join(crop_folder, f"crop_{box_num + 1}.jpg")
+            #     cv2.imwrite(crop_path, cropped_img)
             for box_num in range(len(bboxes)):
                 item = bboxes[box_num]
                 data = np.array([[int(item[0][0]), int(item[0][1]), int(item[1][0]), int(item[1][1]), int(item[2][0]),
@@ -193,68 +211,44 @@ if uploaded_file is not None:
             cv_img = [str(detector.predict(Image.open(f'crop_Word/crop_' + str(i + 1) + '.jpg'))) for i in
                         range(len(bboxes))]
             print(cv_img)
-            from google.generativeai.types import HarmCategory, HarmBlockThreshold
-            import google.generativeai as genai
+            # from google.generativeai.types import HarmCategory, HarmBlockThreshold
+            # import google.generativeai as genai
 
-            genai.configure(api_key="AIzaSyAH4ayK6nL71wxPtuYOCe32OdZVZAANWic")
+            # genai.configure(api_key="AIzaSyAH4ayK6nL71wxPtuYOCe32OdZVZAANWic")
 
-            # Khởi tạo mô hình
-            model = genai.GenerativeModel(model_name='gemini-1.5-flash')
+            # # Khởi tạo mô hình
+            # model = genai.GenerativeModel(model_name='gemini-1.5-flash')
 
-            # Thiết lập safe_setting cho các loại harm có sẵn và hợp lệ
-            safety_settings = [
-                {"category": HarmCategory.HARM_CATEGORY_HATE_SPEECH, "threshold": HarmBlockThreshold.BLOCK_NONE},
-                {"category": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-                {"category": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-                {"category": HarmCategory.HARM_CATEGORY_HARASSMENT, "threshold": HarmBlockThreshold.BLOCK_NONE}
-            ]
-            print("ok")
-            response = model.generate_content(
-                [f"tìm tên, ngày sinh, nơi cư trú, số căn cước, hạn sử dụng trong mảng sau  {cv_img}, chỉ trả về tên, ngày sinh, nơi cư trú, số căn cước,hạn sử dụng mà model tìm thấy được, không trả lời thêm gì, ví dụ 'NGUYỄN THANH SANG, 18/05/1981, 223/11 Kv Bỉnh- Dương, Long Hòa, Bình Thủy, Cần Thơ, 092081007131, 18/05/2041  '"],
-                safety_settings=safety_settings
-            )
-            # print(f"tìm tên, ngày sinh, nơi cư trú, số căn cước, hạn sử dụng trong mảng sau  {cv_img}, chỉ trả về tên, ngày sinh, nơi cư trú, số căn cước,hạn sử dụng mà model tìm thấy được, không trả lời thêm gì, ví dụ 'NGUYỄN THANH SANG, 18/05/1981, 223/11 Kv Bỉnh- Dương, Long Hòa, Bình Thủy, Cần Thơ, 092081007131, 18/05/2041  '")
-            print(response.text)
+            # # Thiết lập safe_setting cho các loại harm có sẵn và hợp lệ
+            # safety_settings = [
+            #     {"category": HarmCategory.HARM_CATEGORY_HATE_SPEECH, "threshold": HarmBlockThreshold.BLOCK_NONE},
+            #     {"category": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, "threshold": HarmBlockThreshold.BLOCK_NONE},
+            #     {"category": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
+            #     {"category": HarmCategory.HARM_CATEGORY_HARASSMENT, "threshold": HarmBlockThreshold.BLOCK_NONE}
+            # ]
+            # print("ok")
+            # response = model.generate_content(
+            #     [f"tìm tên, ngày sinh, nơi cư trú, số căn cước, hạn sử dụng trong mảng sau  {cv_img}, chỉ trả về tên, ngày sinh, nơi cư trú, số căn cước,hạn sử dụng mà model tìm thấy được, không trả lời thêm gì, ví dụ 'NGUYỄN THANH SANG, 18/05/1981, 223/11 Kv Bỉnh- Dương, Long Hòa, Bình Thủy, Cần Thơ, 092081007131, 18/05/2041  '"],
+            #     safety_settings=safety_settings
+            # )
+            # # print(f"tìm tên, ngày sinh, nơi cư trú, số căn cước, hạn sử dụng trong mảng sau  {cv_img}, chỉ trả về tên, ngày sinh, nơi cư trú, số căn cước,hạn sử dụng mà model tìm thấy được, không trả lời thêm gì, ví dụ 'NGUYỄN THANH SANG, 18/05/1981, 223/11 Kv Bỉnh- Dương, Long Hòa, Bình Thủy, Cần Thơ, 092081007131, 18/05/2041  '")
+            # print(response.text)
             
 
-            # for box in bboxes:
-            #     cv2.polylines(image, [np.int32(box)], isClosed=True, color=(0, 255, 0), thickness=1)
+            for box in bboxes:
+                cv2.polylines(image, [np.int32(box)], isClosed=True, color=(0, 255, 0), thickness=1)
             
-            # plt.figure(figsize=(20, 20))
-            # plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-            # plt.title('Detected Text Bounding Boxes')
-            # plt.show()
+            plt.figure(figsize=(20, 20))
+            plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+            plt.title('Detected Text Bounding Boxes')
+            plt.show()
             print(f"đã load xong ảnh {k + 1}")
-        
-        info_string = response.text.strip()  # Loại bỏ khoảng trắng thừa
-        print(type(info_string))
-        print(info_string)  # In chuỗi để kiểm tra
 
-        pattern = r"^(.+?),\s*(\d{2}/\d{2}/\d{4}),\s*(.+?),\s*(.+?),\s*(.+?),\s*(\d{12}),\s*(\d{2}/\d{2}/\d{4})$"
-        match = re.match(pattern, info_string)
-
-        if match:
-            ho_ten = match.group(1)  # ĐỖ VĂN MẠNH
-            ngay_sinh = match.group(2)  # 18/10/1991
-            noi_cu_tru = match.group(3) + ", " + match.group(4) + ", " + match.group(5)  # Tân Dân, Thành phố chí Linh, Hải Dương
-            so_can_cuoc = match.group(6)  # 030091002288
-            han_su_dung = match.group(7)  # 18/10/2031
-
-            # Hiển thị các thông tin đã lấy được
-            print("Họ và tên:", ho_ten)
-            print("Ngày sinh:", ngay_sinh)
-            print("Nơi cư trú:", noi_cu_tru)
-            print("Số căn cước:", so_can_cuoc)
-            print("Hạn sử dụng:", han_su_dung)
-        else:
-            print("Không tìm thấy thông tin phù hợp trong chuỗi.")
-        
-        # Hiển thị kết quả
+        # # Hiển thị kết quả
         st.subheader("Kết quả trích xuất:")
-        st.text_area("ALL TEXT", cv_img)
-        st.text_area("Thông tin căn cước", response.text)
-        st.text_area("Tên", ho_ten if match else "")
-        st.text_area("Ngày sinh", ngay_sinh if match else "")
-        st.text_area("Nơi cư trú", noi_cu_tru if match else "")
-        st.text_area("Số căn cước", so_can_cuoc if match else "")
-        st.text_area("Hạn sử dụng", han_su_dung if match else "")
+        st.text_area("ALL TEXT",cv_img)
+        # st.text_area("Tên", response.text.get('name', ''))
+        # st.text_area("Ngày sinh", response.text.get('dob', ''))
+        # st.text_area("Nơi cư trú", response.text.get('address', ''))
+        # st.text_area("Số căn cước", response.text.get('id_number', ''))
+        # st.text_area("Hạn sử dụng", response.text.get('expiry', ''))
