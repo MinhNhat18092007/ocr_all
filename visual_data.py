@@ -1,7 +1,7 @@
 import re
 import streamlit as st
 from PIL import Image
-from PIL import Image, ImageTk
+from PIL import Image
 import os
 import argparse
 import torch
