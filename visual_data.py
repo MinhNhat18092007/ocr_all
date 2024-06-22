@@ -1,9 +1,6 @@
 import re
 import streamlit as st
 from PIL import Image
-from tkinter import ttk
-import tkinter as tk
-from tkinter import filedialog
 from PIL import Image, ImageTk
 import os
 import argparse
@@ -25,20 +22,15 @@ from PIL import Image
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 import os
-import tkinter as tk
-from tkinter import filedialog
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
 import cv2
 import glob
 import matplotlib.pyplot as plt
-import tkinter as tk
-from tkinter import filedialog
 from PIL import Image, ImageTk
 import file_utils
 import os
-import tkinter.messagebox as messagebox
 import imgproc
 
 
