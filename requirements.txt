@@ -1,0 +1,13 @@
+numpy 
+pandas 
+matplotlib
+scikit-learn 
+tensorflow
+seaborn 
+beautifulsoup4 
+requests 
+plotly 
+keras
+vietocr
+streamlit
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
