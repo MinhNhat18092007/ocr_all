@@ -1,13 +1,15 @@
-numpy 
-pandas 
+numpy
+pandas
 matplotlib
-scikit-learn 
+scikit-learn
 tensorflow
-seaborn 
-beautifulsoup4 
-requests 
-plotly 
+seaborn
+beautifulsoup4
+requests
+plotly
 keras
 vietocr
 streamlit
-torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+torch --index-url https://download.pytorch.org/whl/cu121
+torchvision --index-url https://download.pytorch.org/whl/cu121
+torchaudio --index-url https://download.pytorch.org/whl/cu121
